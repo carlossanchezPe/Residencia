@@ -15,6 +15,9 @@ const Alumnos = ({ alumnos = [] }) => {
   const [showModalInfo, setShowModalInfo] = useState(false);
   const [alumnoSeleccionado, setAlumnoSeleccionado] = useState(null);
   const { role } = useAuth();
+  const [filtroSemestre, setFiltroSemestre] = useState('');
+  const [filtroIngreso, setFiltroIngreso] = useState('');
+  
 
   const handlePageChange = ({ selected }) => {
     setPaginaActual(selected);
@@ -26,12 +29,28 @@ const Alumnos = ({ alumnos = [] }) => {
     saveAs(blob, 'alumnos.csv');
   };
 
-  const alumnosFiltrados = (alumnos || []).filter(
-    (alumno) =>
+  const alumnosFiltrados = alumnos.filter((alumno) => {
+    // Filtro por texto (nombre o matrícula)
+    const cumpleTexto =
+      !filtro ||
       alumno.matricula.toLowerCase().includes(filtro.toLowerCase()) ||
-      alumno.nombre.toLowerCase().includes(filtro.toLowerCase())
-  );
-
+      alumno.nombre.toLowerCase().includes(filtro.toLowerCase());
+  
+    // Filtro por semestre
+    const cumpleSemestre = !filtroSemestre || alumno.semestre.toString() === filtroSemestre;
+  
+    // Filtro por año de ingreso
+    const cumpleIngreso = !filtroIngreso || alumno.ingreso.toString() === filtroIngreso;
+  
+    // Combinar todos los filtros
+    return cumpleTexto && cumpleSemestre && cumpleIngreso;
+  });
+  
+  
+  
+  
+  
+  
   const inicio = paginaActual * alumnosPorPagina;
   const alumnosPaginados = alumnosFiltrados.slice(inicio, inicio + alumnosPorPagina);
 
@@ -49,13 +68,47 @@ const Alumnos = ({ alumnos = [] }) => {
     <div className="alumnos-container">
       <h2>Lista de Alumnos</h2>
 
-      <input
-        type="text"
-        placeholder="Buscar por matrícula o nombre"
-        value={filtro}
-        onChange={(e) => setFiltro(e.target.value)}
-        className="form-control mb-3"
-      />
+      <div className="filter-container mb-4">
+  <h4>Filtros de Búsqueda</h4>
+
+  {/* Filtro por Matrícula o Nombre */}
+  <input
+    type="text"
+    placeholder="Buscar por matrícula o nombre"
+    value={filtro}
+    onChange={(e) => setFiltro(e.target.value)}
+    className="form-control mb-2"
+  />
+
+  {/* Filtro por Semestre */}
+  <select
+    onChange={(e) => setFiltroSemestre(e.target.value)}
+    className="form-select mb-2"
+  >
+    <option value="">Filtrar por Semestre</option>
+    {[...new Set(alumnos.map((alumno) => alumno.semestre))].map((semestre) => (
+      <option key={semestre} value={semestre}>
+        Semestre {semestre}
+      </option>
+    ))}
+  </select>
+
+  {/* Filtro por Año de Ingreso */}
+  <select
+    onChange={(e) => setFiltroIngreso(e.target.value)}
+    className="form-select mb-2"
+  >
+    <option value="">Filtrar por Año de Ingreso</option>
+    {[...new Set(alumnos.map((alumno) => alumno.ingreso))].map((anio) => (
+      <option key={anio} value={anio}>
+        Año {anio}
+      </option>
+    ))}
+  </select>
+</div>
+
+
+
 
       {role !== 'profesor' && (
         <button onClick={exportarCSV} className="btn btn-primary mb-3">
@@ -63,46 +116,51 @@ const Alumnos = ({ alumnos = [] }) => {
         </button>
       )}
 
-      <div className="table-responsive">
-        <table className="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th>Matrícula</th>
-              <th>Nombre</th>
-              <th>Apellido Paterno</th>
-              <th>Apellido Materno</th>
-              <th>Año de Ingreso</th>
-              <th>Semestre</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {alumnosPaginados.map((alumno) => (
-              <tr key={alumno.id}>
-                <td>{alumno.matricula}</td>
-                <td>
-                  <span
-                    onClick={() => abrirModalInfo(alumno)}
-                    className="info-link"
-                    style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-                  >
-                    {alumno.nombre}
-                  </span>
-                </td>
-                <td>{alumno.apellidoP}</td>
-                <td>{alumno.apellidoM}</td>
-                <td>{alumno.ingreso}</td>
-                <td>{alumno.semestre}</td>
-                <td>
-                  <button onClick={() => abrirModalNota(alumno)} className="btn btn-info btn-sm">
-                    Ver Nota
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+<div className="table-responsive">
+  {alumnosFiltrados.length > 0 ? (
+    <table className="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Matrícula</th>
+          <th>Nombre</th>
+          <th>Apellido Paterno</th>
+          <th>Apellido Materno</th>
+          <th>Año de Ingreso</th>
+          <th>Semestre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {alumnosPaginados.map((alumno) => (
+          <tr key={alumno.id}>
+            <td>{alumno.matricula}</td>
+            <td>
+              <span
+                onClick={() => abrirModalInfo(alumno)}
+                className="info-link"
+                style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+              >
+                {alumno.nombre}
+              </span>
+            </td>
+            <td>{alumno.apellidoP}</td>
+            <td>{alumno.apellidoM}</td>
+            <td>{alumno.ingreso}</td>
+            <td>{alumno.semestre}</td>
+            <td>
+              <button onClick={() => abrirModalNota(alumno)} className="btn btn-info btn-sm">
+                Ver Nota
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <p className="text-center mt-4">No se encontraron alumnos con los filtros aplicados.</p>
+  )}
+</div>
+
 
       <ReactPaginate
         previousLabel={"Anterior"}
@@ -140,17 +198,20 @@ const Alumnos = ({ alumnos = [] }) => {
           <p><strong>Matrícula:</strong> {alumnoSeleccionado?.matricula}</p>
           <p><strong>Semestre:</strong> {alumnoSeleccionado?.semestre}</p>
           <p><strong>Materias:</strong></p>
-          <ul>
-            {alumnoSeleccionado?.materias?.length > 0 ? (
-              alumnoSeleccionado.materias.map((materia, index) => (
-                <li key={index}>
-                  <strong>{materia.nombre}</strong> - Profesor: {materia.profesor}, Año: {materia.anio}
-                </li>
-              ))
-            ) : (
-              <p>Sin materias asignadas.</p>
-            )}
-          </ul>
+          <p><strong>Materias y Comentarios:</strong></p>
+<ul>
+  {alumnoSeleccionado?.materias?.length > 0 ? (
+    alumnoSeleccionado.materias.map((materia, index) => (
+      <li key={index}>
+        <strong>{materia.nombre}</strong> - Créditos: {materia.creditos} <br />
+        <em>Comentario:</em> {materia.nota || 'Sin comentario'}
+      </li>
+    ))
+  ) : (
+    <p>Sin materias asignadas.</p>
+  )}
+</ul>
+
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModalInfo(false)}>

@@ -46,4 +46,15 @@
   .btn-submit:hover {
     background-color: #464c8e;
   }
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+  }
+  
+  .btn-submit:disabled {
+    background-color: #d3d3d3;
+    cursor: not-allowed;
+  }
   

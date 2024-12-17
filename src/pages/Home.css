@@ -1,8 +1,10 @@
+/* General */
 .home-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh; /* Centrado vertical en toda la ventana */
+  padding: 20px; /* Añadir algo de espacio en dispositivos pequeños */
 }
 
 .home-container {
@@ -18,7 +20,8 @@
 
 .home-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-10px); /* Eleva la tarjeta */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
 }
 
 .home-container h1 {
@@ -36,3 +39,59 @@
   font-weight: bold;
   border-radius: 8px;
 }
+
+/* Responsividad */
+
+/* Teléfonos (menor a 576px) */
+@media (max-width: 576px) {
+  .home-container {
+    max-width: 100%; /* Asegura que ocupe todo el ancho */
+  }
+
+  .home-container h1 {
+    font-size: 1.8rem; /* Reduce el tamaño del texto */
+    margin-bottom: 15px;
+  }
+
+  .home-container p.lead {
+    font-size: 1rem; /* Reduce ligeramente el tamaño del texto */
+  }
+
+  .home-card {
+    width: 100%; /* Asegura que las tarjetas ocupen todo el ancho */
+    margin-bottom: 20px; /* Espacio entre tarjetas */
+  }
+
+  .home-wrapper {
+    height: auto; /* Permite que la página se expanda si hay mucho contenido */
+    padding: 10px; /* Reduce el padding */
+  }
+}
+
+/* Tablets (576px a 768px) */
+@media (min-width: 576px) and (max-width: 768px) {
+  .home-container h1 {
+    font-size: 2rem; /* Ajuste intermedio para el texto */
+  }
+
+  .home-container p.lead {
+    font-size: 1.05rem;
+  }
+
+  .home-card {
+    margin-bottom: 20px; /* Espacio entre tarjetas */
+  }
+}
+
+/* Pantallas medianas (768px a 992px) */
+@media (min-width: 768px) and (max-width: 992px) {
+  .home-container h1 {
+    font-size: 2.2rem;
+  }
+
+  .home-container p.lead {
+    font-size: 1.1rem;
+  }
+}
+
+

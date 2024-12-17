@@ -48,7 +48,11 @@ function App() {
       materias: materiasPorSemestre[1]
     },
   ]);
+  
 
+
+
+  
   const agregarAlumno = (nuevoAlumno) => {
     setAlumnos([...alumnos, { id: alumnos.length + 1, semestre: 1, materias: materiasPorSemestre[1], ...nuevoAlumno }]);
   };
@@ -74,6 +78,10 @@ function App() {
       const alumnoRef = doc(db, 'alumnos', alumno.id.toString());
       await updateDoc(alumnoRef, { semestre: alumno.semestre, materias: alumno.materias });
     });
+  };
+
+  const actualizarTodosLosRegistros = (nuevosRegistros) => {
+    setAlumnos(nuevosRegistros); // Actualiza el estado correctamente
   };
 
   return (
@@ -107,6 +115,7 @@ function App() {
                   agregarRegistro={agregarAlumno}
                   actualizarRegistro={actualizarAlumno}
                   avanzarSemestre={avanzarSemestre} // Pasa la función avanzarSemestre
+                  actualizarTodosLosRegistros={actualizarTodosLosRegistros} // Nueva función añadida
                 />
               </ProtectedRoute>
             }
@@ -134,3 +143,4 @@ function App() {
 }
 
 export default App;
+  
